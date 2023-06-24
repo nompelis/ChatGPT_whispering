@@ -1,0 +1,137 @@
+In what follows, I am after having ChatGPT explain to me how smart contracts that have been minted on the Ethereum blockchain can interact with eachother. The tricky part is that Solidity will instantiate a "local instance" of a smart contract, but will act on hits members bya reference, and this happens when the "constructor" of the subject contract is called by the parent contract with an address of the subject contract as a reference.
+
+User:
+Write a simple Ethereum smart contract in Solidity.
+
+ChatGPT:
+Sure, I'll write a very basic smart contract for you. This smart contract will be a simple storage contract which can store and retrieve a number.
+
+Solidity
+
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
+
+contract SimpleStorage {
+    uint public data;
+
+    function set(uint x) public {
+        data = x;
+    }
+
+    function get() public view returns (uint) {
+        return data;
+    }
+}
+
+Explanation of the contract:
+
+    pragma solidity >=0.4.22 <0.9.0; - This line is to specify the compiler version. This contract can be compiled using a compiler version in range 0.4.22 (inclusive) to 0.9.0 (exclusive).
+
+    contract SimpleStorage {...} - This is the contract declaration, SimpleStorage is the name of the contract.
+
+    Inside the contract, there's a state variable data of type uint. State variables are permanently stored in contract storage.
+
+    function set(uint x) public {...} - This is a function that sets the value of data. The keyword public means that this function can be called internally, or can be called by other contracts.
+
+    function get() public view returns (uint) {...} - This is a function that returns the current value of data. The keyword view means that this function doesn't change the state of the contract.
+
+Remember, Ethereum smart contracts are immutable once deployed. So, choose carefully when you decide what functionality you want in your contracts.
+
+Also, Solidity is regularly updated with new features and bug fixes. Always be sure to check the official Solidity documentation for the most recent information when writing smart contracts.
+
+User:
+What does the member "data" have the "?public" modifier?
+
+ChatGPT:
+The public modifier on a state variable in Solidity provides an implicit getter function for that variable.
+
+In our example, uint public data; means that there's an accessible state variable named data and the public keyword automatically generates a function that allows you to read the current value of data from outside the contract.
+
+Here is what the implicitly generated getter function would look like:
+
+solidity
+
+function data() external view returns (uint) {
+    return data;
+}
+
+This function is read-only and does not consume any gas when called. Also note that while the public keyword provides read access, it does not provide write access. The state variable data can only be modified within the contract (in this case, by the set function).
+
+If you didn't specify public (or any other visibility modifier), the variable would be considered private by default, which means it could only be accessed from within the same contract where it is defined.
+
+User:
+Can a smart contract make use of other smart contracts?
+
+ChatGPT:
+2 / 2
+
+Yes, a smart contract can interact with other smart contracts. This interaction can happen in various ways:
+
+    Direct interaction: A contract can call another contract's functions directly if the function visibility allows it (public or external).
+
+    Interface interaction: If a contract is supposed to interact with another unknown contract (unknown at the time of writing the interacting contract), it can do so through an interface. The interface will define the function signatures of the contract to interact with.
+
+    Contract Inheritance: A contract can inherit from another contract, making use of its functions and state variables.
+
+Here's a simple example of one contract interacting with another:
+
+solidity
+
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
+
+contract SimpleStorage {
+    uint public data;
+
+    function set(uint x) public {
+        data = x;
+    }
+
+    function get() public view returns (uint) {
+        return data;
+    }
+}
+
+contract StorageUser {
+    SimpleStorage simpleStorage;
+
+    constructor(address _simpleStorageAddress) {
+        simpleStorage = SimpleStorage(_simpleStorageAddress);
+    }
+
+    function setData(uint x) public {
+        simpleStorage.set(x);
+    }
+
+    function getData() public view returns (uint) {
+        return simpleStorage.get();
+    }
+}
+
+In this code, StorageUser is a contract that uses the SimpleStorage contract. When deploying StorageUser, you provide the address of an already deployed SimpleStorage contract. Then StorageUser can interact with SimpleStorage through its public set and get methods.
+
+Remember to always verify the contract you are interacting with, as calling functions on an untrusted contract could have security implications.
+
+User:
+In this example, the SimpleStorage contract does not have a constructor, but you use a constructor that takes the contract address as an argument. Can you explain what happens there?
+
+ChatGPT:
+Sure, I'll be happy to explain this.
+
+A constructor is a special function in Solidity that is executed only once when the contract is first created (deployed). It is usually used for any setup the contract needs. It can take parameters, which can be provided at the time of contract deployment.
+
+In the example, SimpleStorage does not have a constructor, which means it does not need any initial setup when it is deployed.
+
+The StorageUser contract, on the other hand, does have a constructor. This constructor takes an address as a parameter, specifically the address of a deployed SimpleStorage contract. When you deploy StorageUser, you must provide the address of the SimpleStorage contract you want it to interact with.
+
+Here's the relevant code:
+
+solidity
+
+constructor(address _simpleStorageAddress) {
+    simpleStorage = SimpleStorage(_simpleStorageAddress);
+}
+
+In this constructor, SimpleStorage(_simpleStorageAddress) is casting the address to the SimpleStorage contract type. This creates a local instance of the SimpleStorage contract inside the StorageUser contract, which allows StorageUser to interact with the SimpleStorage contract at that address.
+
+This code basically tells StorageUser where to find the SimpleStorage contract it wants to interact with. It stores this instance in the state variable simpleStorage, so StorageUser can call simpleStorage.set(x) and simpleStorage.get() to interact with the SimpleStorage contract.
