@@ -1,0 +1,119 @@
+This is an example of asking ChatGPT (GPT-4) to create a simgple dynamic widget in Javascript.
+
+To make it work properly, put the Javascript code within <script> </script>
+
+User:
+Can you write a simple widgets in Javascript?
+
+ChatGPT:
+
+Sure, I can give you an example of how to create a simple widget using JavaScript.
+
+For this example, let's create a simple clock widget.
+
+HTML:
+
+html
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div id="clock"></div>
+</body>
+</html>
+
+JavaScript:
+
+javascript
+
+function updateClock() {
+    var now = new Date(); // get the current date
+    var hours = now.getHours(); // extract the hours from the date
+    var minutes = now.getMinutes(); // extract the minutes from the date
+    var seconds = now.getSeconds(); // extract the seconds from the date
+
+    // Pad with 0s if needed
+    hours = (hours < 10 ? '0' : '') + hours;
+    minutes = (minutes < 10 ? '0' : '') + minutes;
+    seconds = (seconds < 10 ? '0' : '') + seconds;
+
+    // Compose the string for display
+    var currentTimeString = hours + ':' + minutes + ':' + seconds;
+
+    // Update the time display
+    document.getElementById('clock').innerText = currentTimeString;
+}
+
+// update the clock immediately and then every second.
+updateClock();
+setInterval(updateClock, 1000);
+
+In this case, we're using the built-in Date object in JavaScript to get the current date and time. We then extract the hours, minutes, and seconds from the current time, and pad them with zeroes if needed (to ensure that they always have at least two digits). The resulting time string is then displayed in the clock element.
+
+The updateClock function is called immediately when the script is loaded to update the time right away. We then use setInterval to call updateClock every 1000 milliseconds (or 1 second), so the time updates every second.
+
+User:
+Can you also augment this widget to have a calendar?
+
+ChatGPT:
+
+Sure, I can show you how to add a simple calendar to this widget as well.
+
+HTML:
+
+html
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div id="clock"></div>
+    <div id="calendar"></div>
+</body>
+</html>
+
+JavaScript:
+
+javascript
+
+function updateClock() {
+    var now = new Date(); // get the current date
+    var hours = now.getHours(); // extract the hours from the date
+    var minutes = now.getMinutes(); // extract the minutes from the date
+    var seconds = now.getSeconds(); // extract the seconds from the date
+
+    // Pad with 0s if needed
+    hours = (hours < 10 ? '0' : '') + hours;
+    minutes = (minutes < 10 ? '0' : '') + minutes;
+    seconds = (seconds < 10 ? '0' : '') + seconds;
+
+    // Compose the string for display
+    var currentTimeString = hours + ':' + minutes + ':' + seconds;
+
+    // Update the time display
+    document.getElementById('clock').innerText = currentTimeString;
+}
+
+function updateCalendar() {
+    var now = new Date();
+    var day = now.getDate();
+    var month = now.getMonth() + 1; // JavaScript months are 0-11
+    var year = now.getFullYear();
+
+    // Pad with 0s if needed
+    day = (day < 10 ? '0' : '') + day;
+    month = (month < 10 ? '0' : '') + month;
+
+    var currentDateString = year + '-' + month + '-' + day;
+
+    document.getElementById('calendar').innerText = currentDateString;
+}
+
+// update the clock and calendar immediately and then every second.
+updateClock();
+updateCalendar();
+setInterval(updateClock, 1000);
+setInterval(updateCalendar, 1000 * 60 * 60); // update the calendar every hour
+
+In the updateCalendar function, we're getting the current date, and then extracting the day, month, and year. We're also padding the day and month with zeroes to ensure they always have two digits. This gives us a date string in the format 'yyyy-mm-dd', which we display in the calendar element.
+
+The updateCalendar function is called immediately when the script is loaded to show the current date right away. Then we use setInterval to call updateCalendar every 3600000 milliseconds (or 1 hour), so the date updates every hour.
